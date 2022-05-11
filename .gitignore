@@ -1,2 +1,5 @@
-*.lua
+**/node_module
 **/out
+**/include
+**/*.eslintrc.json
+**/*.tsbuildinfo
