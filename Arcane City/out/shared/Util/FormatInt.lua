@@ -1,11 +1,15 @@
 -- Compiled with roblox-ts v1.2.7
 local function FormatInt(x)
-	local tuple = { string.find(tostring(x), "([-]?)(%d+)([.]?%d*)") }
-	local minus = tuple[3]
-	local int = tuple[4]
-	local fraction = tuple[5]
-	int = (string.gsub(string.reverse(int), "(%d%d%d)", "%1"))
-	return minus .. (string.gsub(string.reverse(int), "^,", "")) .. fraction
+	local formatted = tostring(x)
+	while true do
+		local tuple = { string.gsub(formatted, "^(-?%d+)(%d%d%d)", "%1,%2") }
+		local k = tuple[2]
+		formatted = tuple[1]
+		if k == 0 then
+			break
+		end
+	end
+	return formatted
 end
 return {
 	default = FormatInt,

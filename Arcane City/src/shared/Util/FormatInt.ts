@@ -1,9 +1,12 @@
 export default function FormatInt(x: number): string {
-    const tuple = tostring(x).find("([-]?)(%d+)([.]?%d*)");
-    const minus = tuple[2] as string;
-    let int = tuple[3] as string;
-    const fraction = tuple[4] as string;
+    let formatted: string = tostring(x);
+    while (true) {
+        const tuple = formatted.gsub("^(-?%d+)(%d%d%d)", "%1,%2");
+        const k = tuple[1];
+        formatted = tuple[0];
 
-    int = int.reverse().gsub("(%d%d%d)", "%1")[0];
-    return minus + int.reverse().gsub("^,", "")[0] + fraction;
+        if (k === 0)
+            break;
+    }
+    return formatted;
 }

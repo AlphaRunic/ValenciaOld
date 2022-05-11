@@ -1,4 +1,5 @@
 import { ReplicatedFirst } from "@rbxts/services";
+import WaitFor from "./Util/WaitFor";
 
 export const Assets = ReplicatedFirst.Assets;
 
@@ -17,36 +18,37 @@ export class GameStats {
     public EquippedItems: ShopItem[] = [];
 }
 
-export class ShopItem {
+const items = Assets.ShopItems;
+export class ShopItem<R extends Model = Model> {
     public Viewport: ViewportFrame & { Title: TextLabel; };
     
     public constructor(
         public readonly Name: string,
         public readonly Description: string,
-        public readonly Price: number,
-        private readonly ItemMesh: MeshPart
+        public readonly Price: number
     ) {}
 
     public AssignViewport(viewport: ViewportFrame & { Title: TextLabel; }): void {
+        const ref = WaitFor<R>(items, this.Name);
+        const mesh = WaitFor<MeshPart>(ref, "Mesh").Clone();
         this.Viewport = viewport;
         this.Viewport.Name = this.Name;
         this.Viewport.Title.Text = this.Name;
-        this.ItemMesh.Parent = viewport;
+        mesh.Parent = viewport;
 
         const cam = new Instance("Camera");
-        cam.CFrame = new CFrame(this.ItemMesh.Position.add(new Vector3(0, 0, -5)), this.ItemMesh.Position);
+        cam.CFrame = new CFrame(mesh.Position.add(new Vector3(0, 0, -5)), mesh.Position);
         cam.Parent = viewport;
         viewport.CurrentCamera = cam;
     }
 }
 
-const items = Assets.ShopItems;
 export const ShopItems: ShopItem[] = [
-    new ShopItem("Basic Sword", "A sharp blade, perfect for combat.", 500, items.BasicSword)
+    new ShopItem("Iron Sword", "A sharp blade, perfect for combat.", 500)
 ];
 
 export class UI {
-    public static GetMain(plr: Player): PlayerGui["Main"] {
+    public static Main(plr: Player): PlayerGui["Main"] {
         return plr.WaitForChild("PlayerGui").WaitForChild("Main", 10) as PlayerGui["Main"];
     }
 }

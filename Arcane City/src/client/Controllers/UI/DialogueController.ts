@@ -10,7 +10,7 @@ declare global {
     }
 }
 
-const main = UI.GetMain(Player);
+const main = UI.Main(Player);
 const dialogueFrame = main.Interactions.Dialogue;
 
 const charLock = Knit.GetService("CharacterLockService");

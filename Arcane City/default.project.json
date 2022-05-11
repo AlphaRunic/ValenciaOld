@@ -1,5 +1,5 @@
 {
-	"name": "RPG-Game",
+	"name": "Valencia: Arcane City",
 	"globIgnorePaths": [
 		"**/package.json",
 		"**/tsconfig.json"

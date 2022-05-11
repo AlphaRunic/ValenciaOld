@@ -13,10 +13,14 @@ do
 		local self = setmetatable({}, Tweenable)
 		return self:constructor(...) or self
 	end
-	function Tweenable:constructor(Instance, Time, Style)
+	function Tweenable:constructor(Instance, Time, Style, DelayTime)
+		if DelayTime == nil then
+			DelayTime = 0
+		end
 		self.Instance = Instance
 		self.Time = Time
 		self.Style = Style
+		self.DelayTime = DelayTime
 	end
 	function Tweenable:AssertProperties()
 		local _time = self.Time
@@ -26,7 +30,7 @@ do
 	end
 	function Tweenable:Tween(goal)
 		self:AssertProperties()
-		local info = TweenInfo.new(self.Time, self.Style)
+		local info = TweenInfo.new(self.Time, self.Style, Enum.EasingDirection.In, 0, false, self.DelayTime)
 		return self:TweenCustom(info, goal)
 	end
 	function Tweenable:TweenIn(goal)
@@ -34,12 +38,12 @@ do
 	end
 	function Tweenable:TweenOut(goal)
 		self:AssertProperties()
-		local info = TweenInfo.new(self.Time, self.Style, Enum.EasingDirection.Out)
+		local info = TweenInfo.new(self.Time, self.Style, Enum.EasingDirection.Out, 0, false, self.DelayTime)
 		return self:TweenCustom(info, goal)
 	end
 	function Tweenable:TweenInOut(goal)
 		self:AssertProperties()
-		local info = TweenInfo.new(self.Time, self.Style, Enum.EasingDirection.InOut)
+		local info = TweenInfo.new(self.Time, self.Style, Enum.EasingDirection.InOut, 0, false, self.DelayTime)
 		return self:TweenCustom(info, goal)
 	end
 	function Tweenable:TweenCustom(info, goal)

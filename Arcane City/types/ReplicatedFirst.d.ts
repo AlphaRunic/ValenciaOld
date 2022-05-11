@@ -11,6 +11,7 @@ interface ReplicatedFirst extends Instance {
 		};
 		UI: Folder & {
 			NotificationLabel: TextLabel;
+			BackpackItem: TextButton;
 			ShopItem: ViewportFrame & {
 				UIAspectRatioConstraint: UIAspectRatioConstraint;
 				Title: TextLabel;
@@ -21,9 +22,18 @@ interface ReplicatedFirst extends Instance {
 				Wheel: ImageLabel;
 			};
 		};
+		VFX: Configuration & {
+			LevelUp: Part & {
+				Beams: ParticleEmitter;
+				Spiral: ParticleEmitter;
+			};
+		};
 		ShopItems: Folder & {
-			BasicSword: MeshPart & {
-				SurfaceAppearance: SurfaceAppearance;
+			["Iron Sword"]: Model & {
+				Mesh: MeshPart & {
+					SurfaceAppearance: SurfaceAppearance;
+				};
+				Handle: Part;
 			};
 		};
 		Enemies: Folder & {

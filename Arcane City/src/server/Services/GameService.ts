@@ -14,22 +14,22 @@ const GameService = Knit.CreateService({
     Name: "GameService",
 
     Client: {
-        Initiate(plr: Player) {
+        Initiate(plr: Player): void {
             this.Server.Initiate(plr);
         }
     },
 
-    Initiate(plr: Player) {
+    Initiate(plr: Player): void {
         $print("GameService active");
         const defaultData = new Map<string, unknown>([
             ["gold", 500],
-            ["gems", 0],
+            ["crystals", 0],
             ["questNumber", 1],
             ["gameStats", new GameStats]
         ]);
         const testData = new Map<string, unknown>([
-            ["TEST_gold", 500],
-            ["TEST_gems", 0],
+            ["TEST_gold", 2000],
+            ["TEST_crystals", 999999],
             ["TEST_questNumber", 1],
             ["TEST_gameStats", new GameStats]
         ]);

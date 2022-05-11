@@ -4,7 +4,8 @@ export default class Tweenable<I extends Instance = Instance> {
     public constructor(
         public readonly Instance: I,
         public readonly Time?: number,
-        public readonly Style?: Enum.EasingStyle
+        public readonly Style?: Enum.EasingStyle,
+        public readonly DelayTime = 0
     ) {}
 
     private AssertProperties(): void {
@@ -14,7 +15,7 @@ export default class Tweenable<I extends Instance = Instance> {
 
     public Tween(goal: Partial<ExtractMembers<Instance, Tweenable<I>>>): Tween {
         this.AssertProperties();
-        const info = new TweenInfo(this.Time, this.Style);
+        const info = new TweenInfo(this.Time, this.Style, Enum.EasingDirection.In, 0, false, this.DelayTime);
         return this.TweenCustom(info, goal);
     }
 
@@ -24,13 +25,13 @@ export default class Tweenable<I extends Instance = Instance> {
 
     public TweenOut(goal: Partial<ExtractMembers<Instance, Tweenable<I>>>): Tween {
         this.AssertProperties();
-        const info = new TweenInfo(this.Time, this.Style, Enum.EasingDirection.Out);
+        const info = new TweenInfo(this.Time, this.Style, Enum.EasingDirection.Out, 0, false, this.DelayTime);
         return this.TweenCustom(info, goal);
     }
 
     public TweenInOut(goal: Partial<ExtractMembers<Instance, Tweenable<I>>>): Tween {
         this.AssertProperties();
-        const info = new TweenInfo(this.Time, this.Style, Enum.EasingDirection.InOut);
+        const info = new TweenInfo(this.Time, this.Style, Enum.EasingDirection.InOut, 0, false, this.DelayTime);
         return this.TweenCustom(info, goal);
     }
 

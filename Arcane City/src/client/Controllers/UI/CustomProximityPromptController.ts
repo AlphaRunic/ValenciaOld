@@ -14,7 +14,7 @@ declare global {
 
 type TeardownCallback = () => void;
 
-const main = UI.GetMain(Player);
+const main = UI.Main(Player);
 function CreatePrompt(prompt: ProximityPrompt): TeardownCallback {
     function UpdateUIFromPrompt(): void {
         const promptFrame = main.Interactions.WaitForChild("DialoguePrompt") as Frame

@@ -1,6 +1,6 @@
 import { KnitClient as Knit } from "@rbxts/knit";
 import { Player } from "@rbxts/knit/Knit/KnitClient";
-import { CharStats, GameStats, UI } from "shared/structs";
+import { CharStats, UI } from "shared/structs";
 import { $print } from "rbxts-transform-debug";
 import Tweenable from "shared/Util/Tweenable";
 
@@ -10,7 +10,7 @@ declare global {
     }
 }
 
-const main = UI.GetMain(Player);
+const main = UI.Main(Player);
 const gameUI = main.Game;
 const statsList = gameUI.Stats.List;
 
@@ -22,7 +22,7 @@ function UpdateStat<T = unknown>(stat: string, value: T): void {
 const PlayerStatsController = Knit.CreateController({
     Name: "PlayerStatsController",
 
-    UpdateUI(stats: CharStats): void {
+    Update(stats: CharStats): void {
         UpdateStat("Damage", stats.Damage);
         UpdateStat("Resist", stats.Resist);
 

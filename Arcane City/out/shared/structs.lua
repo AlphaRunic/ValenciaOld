@@ -1,6 +1,7 @@
 -- Compiled with roblox-ts v1.2.7
 local TS = require(game:GetService("ReplicatedStorage"):WaitForChild("rbxts_include"):WaitForChild("RuntimeLib"))
 local ReplicatedFirst = TS.import(script, TS.getModule(script, "@rbxts", "services")).ReplicatedFirst
+local WaitFor = TS.import(script, game:GetService("ReplicatedStorage"), "TS", "Util", "WaitFor").default
 local Assets = ReplicatedFirst.Assets
 local CharStats
 do
@@ -41,6 +42,7 @@ do
 		self.EquippedItems = {}
 	end
 end
+local items = Assets.ShopItems
 local ShopItem
 do
 	ShopItem = setmetatable({}, {
@@ -53,27 +55,27 @@ do
 		local self = setmetatable({}, ShopItem)
 		return self:constructor(...) or self
 	end
-	function ShopItem:constructor(Name, Description, Price, ItemMesh)
+	function ShopItem:constructor(Name, Description, Price)
 		self.Name = Name
 		self.Description = Description
 		self.Price = Price
-		self.ItemMesh = ItemMesh
 	end
 	function ShopItem:AssignViewport(viewport)
+		local ref = WaitFor(items, self.Name)
+		local mesh = WaitFor(ref, "Mesh"):Clone()
 		self.Viewport = viewport
 		self.Viewport.Name = self.Name
 		self.Viewport.Title.Text = self.Name
-		self.ItemMesh.Parent = viewport
+		mesh.Parent = viewport
 		local cam = Instance.new("Camera")
-		local _position = self.ItemMesh.Position
+		local _position = mesh.Position
 		local _vector3 = Vector3.new(0, 0, -5)
-		cam.CFrame = CFrame.new(_position + _vector3, self.ItemMesh.Position)
+		cam.CFrame = CFrame.new(_position + _vector3, mesh.Position)
 		cam.Parent = viewport
 		viewport.CurrentCamera = cam
 	end
 end
-local items = Assets.ShopItems
-local ShopItems = { ShopItem.new("Basic Sword", "A sharp blade, perfect for combat.", 500, items.BasicSword) }
+local ShopItems = { ShopItem.new("Iron Sword", "A sharp blade, perfect for combat.", 500) }
 local UI
 do
 	UI = setmetatable({}, {
@@ -88,7 +90,7 @@ do
 	end
 	function UI:constructor()
 	end
-	function UI:GetMain(plr)
+	function UI:Main(plr)
 		return plr:WaitForChild("PlayerGui"):WaitForChild("Main", 10)
 	end
 end

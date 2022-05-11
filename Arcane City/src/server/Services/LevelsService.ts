@@ -1,5 +1,8 @@
 import { KnitServer as Knit } from "@rbxts/knit";
-import { GameStats } from "shared/structs";
+import { Debris } from "@rbxts/services";
+import { Assets, GameStats } from "shared/structs";
+import Tweenable from "shared/Util/Tweenable";
+import Weld from "shared/Util/Weld";
 
 declare global {
     interface KnitServices {
@@ -16,13 +19,13 @@ function SetStatsFor(plr: Player, newStats: GameStats): void {
     data.Set<GameStats>(plr, "gameStats", newStats);
 }
 
-const { abs, clamp, floor, huge } = math;
+const { abs, clamp, floor, huge: inf } = math;
 const LevelsService = Knit.CreateService({
     Name: "LevelsService",
 
     Client: {
-        GetXPUntilNextLevel(plr: Player): number {
-            return this.Server.GetXPUntilNextLevel(plr);
+        GetXPUntilNext(plr: Player): number {
+            return this.Server.GetXPUntilNext(plr);
         },
         
         AddXP(plr: Player, amount: number): void {
@@ -48,9 +51,9 @@ const LevelsService = Knit.CreateService({
 
     CheckLevelUpAvailability(plr: Player): void {
         const xp: number = this.GetXP(plr);
-        const untilNext: number = this.GetXPUntilNextLevel(plr);
+        const untilNext: number = this.GetXPUntilNext(plr);
         if (xp >= untilNext) {
-            const difference: number = abs(clamp(xp - untilNext, -huge, 0));
+            const difference: number = abs(clamp(xp - untilNext, -inf, 0));
                 if (difference > 0)
                 this.AddXP(plr, difference);
 
@@ -73,6 +76,24 @@ const LevelsService = Knit.CreateService({
         const stats: GameStats = GetStatsFor(plr);
         stats.Level += 1;
         SetStatsFor(plr, stats);
+
+        const char = plr.Character!;
+        const vfx = Assets.VFX.LevelUp.Clone();
+        const root = char.PrimaryPart!;
+        const weld = <Weld>Weld(root, vfx, false);
+        // weld.C1 = root.CFrame.sub(new Vector3(0, -2));
+        vfx.Spiral.Enabled = true;
+        vfx.Beams.Enabled = true;
+        vfx.Parent = char;
+
+        const vfxTwn = new Tweenable(weld, 1.8, Enum.EasingStyle.Back, 1);
+        vfxTwn.TweenOut({
+            C1: weld.C1.mul(new CFrame(0, -3, 0))
+        }).Completed.Connect(() => {
+            vfx.Spiral.Enabled = false;
+            vfx.Beams.Enabled = false;
+            Debris.AddItem(vfx, 4);
+        });
     },
 
     AddXP(plr: Player, amount: number): void {
@@ -87,9 +108,9 @@ const LevelsService = Knit.CreateService({
         SetStatsFor(plr, stats);
     },
 
-    GetXPUntilNextLevel(plr: Player): number {
+    GetXPUntilNext(plr: Player): number {
         const stats: GameStats = GetStatsFor(plr);
-        return floor(750 + (stats.Level / .3) ^ 2);
+        return floor(750 + (stats.Level / .3) ^ 2.3);
     }
 });
 

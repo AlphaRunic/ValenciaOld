@@ -1,11 +1,11 @@
-/* eslint-disable prefer-const */
 import { KnitClient as Knit } from "@rbxts/knit";
-import { RunService, StarterGui, Stats, UserInputService as Input } from "@rbxts/services";
+import { RunService, StarterGui, Stats } from "@rbxts/services";
 import { Player } from "@rbxts/knit/Knit/KnitClient";
+import { Exception } from "shared/Internal/Exception";
 import { GameStats, UI } from "shared/structs";
 import { $print } from "rbxts-transform-debug";
-import FormatInt from "shared/Util/FormatInt";
 import Tweenable from "shared/Util/Tweenable";
+import FormatInt from "shared/Util/FormatInt";
 
 declare global {
     interface KnitControllers {
@@ -13,23 +13,38 @@ declare global {
     }
 }
 
-const main = UI.GetMain(Player);
+const main = UI.Main(Player);
 const gameUI = main.Game;
 const debugUI = main.Debug;
-const coins = gameUI.Coins;
-const gems = gameUI.Gems;
+const gold = gameUI.Gold;
+const crystals = gameUI.Crystals;
 const xp = gameUI.XP.Bar;
 const level = gameUI.Level;
 const questGuide = gameUI.QuestInstructions;
 
 const UIController = Knit.CreateController({
     Name: "UIController",
+
+    RunDebugUI(): void {
+        if (RunService.IsStudio()) {
+            debugUI.Visible = true;
+            task.spawn(() => {
+                while (debugUI.Visible) {
+                    debugUI.DataSend.Text = "Data Send (kb/s): " + math.floor(Stats.DataSendKbps) + " kb/s";
+                    debugUI.DataReceive.Text = "Data Receive (kb/s): " + math.floor(Stats.DataReceiveKbps) + " kb/s";
+                    debugUI.Memory.Text = "Memory: " + FormatInt(math.floor(Stats.GetTotalMemoryUsageMb())) + "mb";
+                    debugUI.Heartbeat.Text = "Heartbeat: " + math.floor(Stats.HeartbeatTimeMs) + "ms";
+                    RunService.Heartbeat.Wait();
+                }
+            });
+        }
+    },
     
-    KnitStart() {
+    KnitStart(): void {
         $print("UIController active");
         StarterGui.SetCoreGuiEnabled(Enum.CoreGuiType.All, false);
 
-        const app = Knit.GetService("GameService");
+        const gameService = Knit.GetService("GameService");
         const data = Knit.GetService("DataManager");
         const levels = Knit.GetService("LevelsService");
         const quests = Knit.GetService("QuestService");
@@ -52,7 +67,7 @@ const UIController = Knit.CreateController({
         const xpBar = new Tweenable(xp, .15, Enum.EasingStyle.Sine);
 
         mouseLock.Toggle(true);
-        app.Initiate();
+        gameService.Initiate();
 
         location.PlaceTeleported.Connect(() => EnableLoadScreen(true));
         location.Teleported.Connect(EnableLoadScreen);
@@ -61,6 +76,7 @@ const UIController = Knit.CreateController({
             questArrow.StopPointing();
             questGuide.Text = "";
         });
+
         quests.Completed.Connect(i => notification.Send(`Quest Completed: ${quests.GetQuestByNumber(i).Name}`));
         quests.Assigned.Connect((goal, name, instructions) => {
             questArrow.StopPointing();
@@ -70,34 +86,30 @@ const UIController = Knit.CreateController({
         });
 
         data.DataUpdated.Connect((name: string, value: unknown) => {
-            name = name.sub(6);
-            if (name === "gold")
-                coins.Value.Text = FormatInt(<number>value);
-            if (name === "gems")
-                gems.Value.Text = FormatInt(<number>value);
-            if (name === "questNumber")
-                quests.Assign(<number>value);
-            if (name === "gameStats") {
-                const stats = <GameStats>value;
-                playerStats.UpdateUI(stats.CharacterStats);
+            name = RunService.IsStudio() ? name.sub(6) : name;
+            switch(name) {
+                case "gold":
+                    gold.Value.Text = FormatInt(<number>value);
+                    break;
+                case "crystals":
+                    crystals.Value.Text = FormatInt(<number>value);
+                    break;
+                case "questNumber":
+                    quests.Assign(<number>value);
+                    break;
+                case "gameStats":
+                    const stats = <GameStats>value;
+                    playerStats.Update(stats.CharacterStats);
+                    
+                    xpBar.Tween({ Size: new UDim2((stats.XP / levels.GetXPUntilNext()) * .93, 0, 1, 0) });
+                    level.Text = FormatInt(stats.Level);
+                    break;
 
-                xpBar.Tween({ Size: new UDim2((stats.XP / levels.GetXPUntilNextLevel()) * .93, 0, 1, 0) });
-                level.Text = FormatInt(stats.Level);
+                default:
+                    throw new Exception("Unhandled database key '" + name + "'");
             }
         });   
-
-        if (RunService.IsStudio()) {
-            debugUI.Visible = true;
-            task.spawn(() => {
-                while (debugUI.Visible) {
-                    debugUI.DataSend.Text = "Data Send (kb/s): " + math.floor(Stats.DataSendKbps) + " kb/s";
-                    debugUI.DataReceive.Text = "Data Receive (kb/s): " + math.floor(Stats.DataReceiveKbps) + " kb/s";
-                    debugUI.Memory.Text = "Memory: " + FormatInt(math.floor(Stats.GetTotalMemoryUsageMb())) + "mb";
-                    debugUI.Heartbeat.Text = "Heartbeat: " + math.floor(Stats.HeartbeatTimeMs) + "ms";
-                    RunService.Heartbeat.Wait();
-                }
-            });
-        }
+        this.RunDebugUI();
     }
 });
 

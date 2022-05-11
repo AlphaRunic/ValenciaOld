@@ -1,6 +1,10 @@
 -- Compiled with roblox-ts v1.2.7
 local TS = require(game:GetService("ReplicatedStorage"):WaitForChild("rbxts_include"):WaitForChild("RuntimeLib"))
 local Knit = TS.import(script, TS.getModule(script, "@rbxts", "knit").Knit).KnitServer
+local Debris = TS.import(script, TS.getModule(script, "@rbxts", "services")).Debris
+local Assets = TS.import(script, game:GetService("ReplicatedStorage"), "TS", "structs").Assets
+local Tweenable = TS.import(script, game:GetService("ReplicatedStorage"), "TS", "Util", "Tweenable").default
+local Weld = TS.import(script, game:GetService("ReplicatedStorage"), "TS", "Util", "Weld").default
 local data = Knit.GetService("DataManager")
 local function GetStatsFor(plr)
 	return data:Get(plr, "gameStats")
@@ -12,12 +16,12 @@ local _binding = math
 local abs = _binding.abs
 local clamp = _binding.clamp
 local floor = _binding.floor
-local huge = _binding.huge
+local inf = _binding.huge
 local LevelsService = Knit.CreateService({
 	Name = "LevelsService",
 	Client = {
-		GetXPUntilNextLevel = function(self, plr)
-			return self.Server:GetXPUntilNextLevel(plr)
+		GetXPUntilNext = function(self, plr)
+			return self.Server:GetXPUntilNext(plr)
 		end,
 		AddXP = function(self, plr, amount)
 			self.Server:AddXP(plr, amount)
@@ -37,9 +41,9 @@ local LevelsService = Knit.CreateService({
 	},
 	CheckLevelUpAvailability = function(self, plr)
 		local xp = self:GetXP(plr)
-		local untilNext = self:GetXPUntilNextLevel(plr)
+		local untilNext = self:GetXPUntilNext(plr)
 		if xp >= untilNext then
-			local difference = abs(clamp(xp - untilNext, -huge, 0))
+			local difference = abs(clamp(xp - untilNext, -inf, 0))
 			if difference > 0 then
 				self:AddXP(plr, difference)
 			end
@@ -59,6 +63,26 @@ local LevelsService = Knit.CreateService({
 		local stats = GetStatsFor(plr)
 		stats.Level += 1
 		SetStatsFor(plr, stats)
+		local char = plr.Character
+		local vfx = Assets.VFX.LevelUp:Clone()
+		local root = char.PrimaryPart
+		local weld = Weld(root, vfx, false)
+		-- weld.C1 = root.CFrame.sub(new Vector3(0, -2));
+		vfx.Spiral.Enabled = true
+		vfx.Beams.Enabled = true
+		vfx.Parent = char
+		local vfxTwn = Tweenable.new(weld, 1.8, Enum.EasingStyle.Back, 1)
+		local _fn = vfxTwn
+		local _object = {}
+		local _left = "C1"
+		local _c1 = weld.C1
+		local _cFrame = CFrame.new(0, -3, 0)
+		_object[_left] = _c1 * _cFrame
+		_fn:TweenOut(_object).Completed:Connect(function()
+			vfx.Spiral.Enabled = false
+			vfx.Beams.Enabled = false
+			Debris:AddItem(vfx, 4)
+		end)
 	end,
 	AddXP = function(self, plr, amount)
 		local stats = GetStatsFor(plr)
@@ -70,9 +94,9 @@ local LevelsService = Knit.CreateService({
 		stats.XP = xp
 		SetStatsFor(plr, stats)
 	end,
-	GetXPUntilNextLevel = function(self, plr)
+	GetXPUntilNext = function(self, plr)
 		local stats = GetStatsFor(plr)
-		return floor(bit32.bxor(750 + (stats.Level / .3), 2))
+		return floor(bit32.bxor(750 + (stats.Level / .3), 2.3))
 	end,
 })
 return LevelsService

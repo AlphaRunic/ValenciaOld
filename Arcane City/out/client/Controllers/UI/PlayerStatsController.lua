@@ -4,7 +4,7 @@ local Knit = TS.import(script, TS.getModule(script, "@rbxts", "knit").Knit).Knit
 local Player = TS.import(script, TS.getModule(script, "@rbxts", "knit").Knit.KnitClient).Player
 local UI = TS.import(script, game:GetService("ReplicatedStorage"), "TS", "structs").UI
 local Tweenable = TS.import(script, game:GetService("ReplicatedStorage"), "TS", "Util", "Tweenable").default
-local main = UI:GetMain(Player)
+local main = UI:Main(Player)
 local gameUI = main.Game
 local statsList = gameUI.Stats.List
 local function UpdateStat(stat, value)
@@ -13,7 +13,7 @@ local function UpdateStat(stat, value)
 end
 local PlayerStatsController = Knit.CreateController({
 	Name = "PlayerStatsController",
-	UpdateUI = function(self, stats)
+	Update = function(self, stats)
 		UpdateStat("Damage", stats.Damage)
 		UpdateStat("Resist", stats.Resist)
 		local statLabel = statsList:WaitForChild("Health")

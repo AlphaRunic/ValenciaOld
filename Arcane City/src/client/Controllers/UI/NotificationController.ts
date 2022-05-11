@@ -9,7 +9,7 @@ declare global {
     }
 }
 
-const main = UI.GetMain(Player);
+const main = UI.Main(Player);
 const interaction = main.Interactions;
 const notificationCenter = interaction.NotificationCenter;
 

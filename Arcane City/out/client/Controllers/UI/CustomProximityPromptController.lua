@@ -6,7 +6,7 @@ local UI = TS.import(script, game:GetService("ReplicatedStorage"), "TS", "struct
 local GetDialoguePrompt = TS.import(script, script.Parent.Parent.Parent, "Roact", "DialoguePrompt").default
 local Roact = TS.import(script, TS.getModule(script, "@rbxts", "roact").src)
 local ProximityPromptService = TS.import(script, TS.getModule(script, "@rbxts", "services")).ProximityPromptService
-local main = UI:GetMain(Player)
+local main = UI:Main(Player)
 local function CreatePrompt(prompt)
 	local function UpdateUIFromPrompt()
 		local promptFrame = main.Interactions:WaitForChild("DialoguePrompt")

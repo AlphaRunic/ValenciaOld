@@ -15,13 +15,13 @@ local GameService = Knit.CreateService({
 		print("[src/server/Services/GameService.ts:23]", "GameService active")
 		local defaultData = {
 			gold = 500,
-			gems = 0,
+			crystals = 0,
 			questNumber = 1,
 			gameStats = GameStats.new(),
 		}
 		local testData = {
-			TEST_gold = 500,
-			TEST_gems = 0,
+			TEST_gold = 2000,
+			TEST_crystals = 999999,
 			TEST_questNumber = 1,
 			TEST_gameStats = GameStats.new(),
 		}

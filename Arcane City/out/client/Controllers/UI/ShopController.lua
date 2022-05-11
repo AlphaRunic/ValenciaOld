@@ -1,18 +1,20 @@
 -- Compiled with roblox-ts v1.2.7
 local TS = require(game:GetService("ReplicatedStorage"):WaitForChild("rbxts_include"):WaitForChild("RuntimeLib"))
--- eslint-disable @typescript-eslint/no-explicit-any
 local _knit = TS.import(script, TS.getModule(script, "@rbxts", "knit").Knit)
 local Knit = _knit.KnitClient
 local Signal = _knit.Signal
 local Player = TS.import(script, TS.getModule(script, "@rbxts", "knit").Knit.KnitClient).Player
+local RunService = TS.import(script, TS.getModule(script, "@rbxts", "services")).RunService
 local _structs = TS.import(script, game:GetService("ReplicatedStorage"), "TS", "structs")
 local Assets = _structs.Assets
 local ShopItems = _structs.ShopItems
 local UI = _structs.UI
 local Tweenable = TS.import(script, game:GetService("ReplicatedStorage"), "TS", "Util", "Tweenable").default
 local FormatInt = TS.import(script, game:GetService("ReplicatedStorage"), "TS", "Util", "FormatInt").default
-local RunService = TS.import(script, TS.getModule(script, "@rbxts", "services")).RunService
-local main = UI:GetMain(Player)
+local Find = TS.import(script, game:GetService("ReplicatedStorage"), "TS", "Util", "Find").default
+local WaitFor = TS.import(script, game:GetService("ReplicatedStorage"), "TS", "Util", "WaitFor").default
+local GetTweenPos = TS.import(script, game:GetService("ReplicatedStorage"), "TS", "Util", "GetTweenPos").default
+local main = UI:Main(Player)
 local shop = main.Interactions.Shop
 local display = shop.ItemDisplay
 local purchaseItem = display.Shadow.Purchase
@@ -20,16 +22,13 @@ local itemIcon = display.Shadow.ItemIcon
 local description = display.Shadow.Description
 local price = itemIcon.Price
 local style = Enum.EasingStyle.Sine
-local animTime = .3
+local animTime = .275
 local displayFrame = Tweenable.new(display, animTime, style)
 local displayShadow = Tweenable.new(display.Shadow, animTime, style)
 local window = Tweenable.new(shop.Window, animTime, style)
-local displayOpenPos = display:GetAttribute("OpenPos")
-local shadowOpenPos = display.Shadow:GetAttribute("OpenPos")
-local windowOpenPos = shop.Window:GetAttribute("OpenPos")
-local displayClosedPos = display:GetAttribute("ClosedPos")
-local shadowClosedPos = display.Shadow:GetAttribute("ClosedPos")
-local windowClosedPos = shop.Window:GetAttribute("ClosedPos")
+local displayPos = GetTweenPos(display)
+local shadowPos = GetTweenPos(display.Shadow)
+local windowPos = GetTweenPos(shop.Window)
 local ShopController = Knit.CreateController({
 	Name = "ShopController",
 	Toggled = Signal.new(),
@@ -39,17 +38,17 @@ local ShopController = Knit.CreateController({
 		shop.Visible = active
 		main.Game.Visible = not active
 		displayFrame:TweenOut({
-			Position = displayClosedPos,
+			Position = displayPos.Closed,
 		})
 		displayShadow:TweenOut({
-			Position = shadowClosedPos,
+			Position = shadowPos.Closed,
 		})
 		window:TweenOut({
-			Position = windowClosedPos,
+			Position = windowPos.Closed,
 		})
 	end,
 	KnitStart = function(self)
-		print("[src/client/Controllers/UI/ShopController.ts:52]", "ShopController active")
+		print("[src/client/Controllers/UI/ShopController.ts:51]", "ShopController active")
 		local data = Knit.GetService("DataManager")
 		local charLock = Knit.GetService("CharacterLockService")
 		local quests = Knit.GetService("QuestService")
@@ -89,7 +88,8 @@ local ShopController = Knit.CreateController({
 			else
 				purchaseItem.Text = "Purchase"
 			end
-			local mesh = selectedItem.Viewport:FindFirstChildOfClass("MeshPart"):Clone()
+			local model = Find(Assets.ShopItems, selectedItem.Name):Clone()
+			local mesh = WaitFor(model, "Mesh")
 			if active then
 				mesh.Parent = itemIcon
 				spinConn = RunService.Heartbeat:Connect(function()
@@ -99,25 +99,25 @@ local ShopController = Knit.CreateController({
 					return mesh.CFrame
 				end)
 				displayFrame:TweenIn({
-					Position = displayOpenPos,
+					Position = displayPos.Open,
 				})
 				displayShadow:TweenIn({
-					Position = shadowOpenPos,
+					Position = shadowPos.Open,
 				})
 				window:TweenIn({
-					Position = windowOpenPos,
+					Position = windowPos.Open,
 				})
 			else
 				spinConn:Disconnect()
 				itemIcon:FindFirstChildOfClass("MeshPart"):Destroy()
 				displayFrame:TweenOut({
-					Position = displayClosedPos,
+					Position = displayPos.Closed,
 				})
 				displayShadow:TweenOut({
-					Position = shadowClosedPos,
+					Position = shadowPos.Closed,
 				})
 				window:TweenOut({
-					Position = windowClosedPos,
+					Position = windowPos.Closed,
 				})
 			end
 			itemIcon.CurrentCamera = selectedItem.Viewport.CurrentCamera
@@ -165,11 +165,12 @@ local ShopController = Knit.CreateController({
 			end)
 		end)
 		local lastItem
-		local inputType = Enum.UserInputType
 		for _, item in ipairs(ShopItems) do
+			local _binding = Enum.UserInputType
+			local MouseButton1 = _binding.MouseButton1
 			local viewport = Assets.UI.ShopItem:Clone()
-			viewport.Parent = shop.Window.List
 			item:AssignViewport(viewport)
+			viewport.Parent = shop.Window.List
 			local itemTitle = Tweenable.new(viewport.Title, .25, style)
 			local openPos = viewport.Title:GetAttribute("OpenPos")
 			local closedPos = viewport.Title:GetAttribute("ClosedPos")
@@ -184,7 +185,7 @@ local ShopController = Knit.CreateController({
 				})
 			end)
 			viewport.InputBegan:Connect(function(io)
-				if io.UserInputType == inputType.MouseButton1 then
+				if io.UserInputType == MouseButton1 then
 					if lastItem == viewport and displayOpen then
 						self.DisplayStateChanged:Fire(false, item)
 					elseif lastItem == nil or not displayOpen then
