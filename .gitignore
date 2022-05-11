@@ -3,3 +3,4 @@
 **/include
 **/*.eslintrc.json
 **/*.tsbuildinfo
+*.bat
