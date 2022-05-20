@@ -58,9 +58,19 @@ interface PlayerGui extends Instance {
 					UICorner: UICorner;
 				};
 				ItemStorage: Frame;
+				Navigation: Frame & {
+					UIListLayout: UIListLayout;
+					Close: ImageButton;
+					Help: ImageButton;
+					Settings: ImageButton;
+				};
 				Actions: Frame & {
 					UIListLayout: UIListLayout;
 					Equip: ImageButton & {
+						UIAspectRatioConstraint: UIAspectRatioConstraint;
+						UICorner: UICorner;
+					};
+					Trash: ImageButton & {
 						UIAspectRatioConstraint: UIAspectRatioConstraint;
 						UICorner: UICorner;
 					};
@@ -91,6 +101,16 @@ interface PlayerGui extends Instance {
 			};
 		};
 		Game: Frame & {
+			HealthBase: ImageLabel & {
+				Clipping: Frame & {
+					Image: ImageLabel & {
+						UICorner: UICorner;
+					};
+				};
+				Crack: ImageLabel;
+				HealthCover: ImageLabel;
+				Value: TextLabel;
+			};
 			Stats: Frame & {
 				Title: TextLabel;
 				List: Frame & {

@@ -1,6 +1,5 @@
 import { KnitClient as Knit } from "@rbxts/knit";
 import { Lighting } from "@rbxts/services";
-import { $print } from "rbxts-transform-debug";
 
 declare global {
     interface KnitControllers {
@@ -12,12 +11,12 @@ const BlurController = Knit.CreateController({
     Name: "BlurController",
     Blur: new Instance("BlurEffect"),
 
-    Toggle(active: boolean): void {
-        this.Blur.Enabled = active;
+    Toggle(active?: boolean): void {
+        this.Blur.Enabled = active?? !this.Blur.Enabled;
     },
 
     KnitInit(): void {
-        $print("BlurController active")
+        print("BlurController active")
         this.Blur.Enabled = false;
         this.Blur.Parent = Lighting;
     }

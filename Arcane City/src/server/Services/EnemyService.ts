@@ -1,6 +1,5 @@
-/* eslint-disable prefer-const */
 import { KnitServer as Knit } from "@rbxts/knit";
-import { Players, Workspace } from "@rbxts/services";
+import { Players, Workspace as World } from "@rbxts/services";
 import { Assets } from "shared/structs";
 import Location from "server/Classes/Location";
 import Enemy from "server/Classes/Enemy";
@@ -12,14 +11,14 @@ declare global {
     }
 }
 
-const combat = Knit.GetService("CombatService");
 const EnemyService = Knit.CreateService({
     Name: "EnemyService",
-
+    
     Create(name: string, spawner: BasePart): Enemy {
+        const combat = Knit.GetService("CombatService");
         const base = <Model>Assets.Enemies.FindFirstChild(name);
         const model: Model = base.Clone();
-        const worldName = <string>Workspace.EnemySpawns.GetAttribute("WorldName");
+        const worldName = <string>World.EnemySpawns.GetAttribute("WorldName");
         const world: Location.World = Worlds.Get(worldName);
         const spawnGroup = <Folder>spawner.Parent;
         const area: Location.Area = world.GetArea(spawnGroup.Name);

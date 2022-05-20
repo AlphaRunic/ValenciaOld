@@ -1,7 +1,7 @@
 import { KnitClient as Knit } from "@rbxts/knit";
 import { Player } from "@rbxts/knit/Knit/KnitClient";
 import { CharStats, UI } from "shared/structs";
-import { $print } from "rbxts-transform-debug";
+import FormatInt from "shared/Util/FormatInt";
 import Tweenable from "shared/Util/Tweenable";
 
 declare global {
@@ -10,9 +10,10 @@ declare global {
     }
 }
 
-const main = UI.Main(Player);
+const main = UI.Main();
 const gameUI = main.Game;
 const statsList = gameUI.Stats.List;
+const healthBase = gameUI.HealthBase;
 
 function UpdateStat<T = unknown>(stat: string, value: T): void {
     const statLabel = <TextLabel>statsList.WaitForChild(stat);
@@ -27,11 +28,14 @@ const PlayerStatsController = Knit.CreateController({
         UpdateStat("Resist", stats.Resist);
 
         const statLabel = <TextLabel>statsList.WaitForChild("Health");
-        statLabel.Text = `Health : ${stats.Health} / ${stats.MaxHealth}`;
+        statLabel.Text = `Health : ${FormatInt(stats.Health)} / ${FormatInt(stats.MaxHealth)}`;
+        healthBase.Value.Text = FormatInt(stats.Health);
+        healthBase.Clipping.Image.Position = new UDim2(0, 0, (stats.Health / stats.MaxHealth) - 1, 0);
+        healthBase.Clipping.Position = new UDim2(.5, 0, .38, healthBase.Clipping.Size.Y.Scale / 2);
     },
 
     KnitStart(): void {
-        $print("PlayerStatsController active");
+        print("PlayerStatsController active");
         const key = Enum.KeyCode;
         const style = Enum.EasingStyle;
         const inputState = Enum.UserInputState;

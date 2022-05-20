@@ -1,7 +1,6 @@
 import { KnitServer as Knit, RemoteSignal, Signal } from "@rbxts/knit";
 import { RunService } from "@rbxts/services";
 import { Data } from "server/Classes/Data";
-import { $print } from "rbxts-transform-debug";
 import DataStore2 from "@rbxts/datastore2";
 
 declare global {
@@ -26,7 +25,7 @@ const DataManager = Knit.CreateService({
     },
 
     KnitInit() {
-        $print("DataService active");
+        print("DataService active");
         DataStore2.Combine("DATA", ...Data);
     },
 

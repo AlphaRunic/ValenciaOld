@@ -1,4 +1,3 @@
-/* eslint-disable roblox-ts/lua-truthiness */
 import { KnitClient as Knit, Signal } from "@rbxts/knit";
 import { Player } from "@rbxts/knit/Knit/KnitClient";
 import { UI } from "shared/structs";
@@ -71,19 +70,28 @@ class Dialogue {
 const DialogueController = Knit.CreateController({
     Name: "DialogueController",
 
-    Create(character: Model): Dialogue {
+    ReadAttrs(instance: Instance): string[] {
         const textList: string[] = [];
-        const dialogue = <Configuration>character.WaitForChild("Dialogue");
         let attrsRead = false;
         for (let i = 1; !attrsRead; i++) {
-            const text = <string>dialogue.GetAttribute(tostring(i));
+            const text = <string>instance.GetAttribute(tostring(i));
             textList.push(text);
 
-            if (!dialogue.GetAttribute(tostring(i + 1)))
+            if (!instance.GetAttribute(tostring(i + 1)))
                 attrsRead = true;
         }
 
-        return new Dialogue(Spacify(character.Name), textList);
+        return textList;
+    },
+
+    Create(character: Model, questName: string): Dialogue {
+        const dialogue = <Folder>character.WaitForChild("Dialogue");
+        let currentDialogue: string[];
+        for (const questDialogue of <Configuration[]>dialogue.GetChildren())
+            if (questDialogue.Name === questName)
+                currentDialogue = this.ReadAttrs(questDialogue);
+
+        return new Dialogue(Spacify(character.Name), currentDialogue);
     }
 });
 

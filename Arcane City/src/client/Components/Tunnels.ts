@@ -1,5 +1,4 @@
 import { Component, KnitClient as Knit } from "@rbxts/knit";
-import { $print } from "rbxts-transform-debug";
 import Tweenable from "shared/Util/Tweenable";
 
 class Tunnels implements Component.ComponentClass {
@@ -11,7 +10,7 @@ class Tunnels implements Component.ComponentClass {
 
     constructor(tunnel: Instance) {
         assert(tunnel.IsA("Model"));
-        $print("TunnelsComponent modifying: " + tunnel.Name);
+        print("TunnelsComponent modifying: " + tunnel.Name);
         
         const closedByDefault = <boolean>tunnel.GetAttribute("ClosedByDefault");
         const openQuest = <number>tunnel.GetAttribute("OpenQuest");

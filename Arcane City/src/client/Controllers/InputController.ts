@@ -1,6 +1,5 @@
 import { KnitClient as Knit } from "@rbxts/knit";
 import { ContextActionService as Action } from "@rbxts/services";
-import { $print } from "rbxts-transform-debug";
 
 declare global {
     interface KnitControllers {
@@ -22,7 +21,7 @@ const InputController = Knit.CreateController({
     },
 
     ToggleBind(name: string, key: Enum.KeyCode | Enum.UserInputType, fn: (active: boolean) => void, createTouch = false) {
-        this.Bind(name, (action, state, io) => {
+        this.Bind(name, (_, state) => {
             if (state === Enum.UserInputState.Begin)
                 fn(true);
             else if (state === Enum.UserInputState.End)

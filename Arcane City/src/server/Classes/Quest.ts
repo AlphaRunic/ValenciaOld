@@ -34,6 +34,7 @@ export namespace Quest {
     export class Predicate {
         public static readonly GoTo = "Go to";
         public static readonly TalkTo = "Talk to";
+        public static readonly AskFor = "Ask for";
         public static readonly Interact = "Interact with";
         public static readonly Defeat = "Defeat";
         public static readonly DNC = "Defeat & Collect";

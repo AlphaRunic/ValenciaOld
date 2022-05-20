@@ -1,6 +1,6 @@
 interface Workspace extends Model {
 	EnemyStorage: Folder & {
-		["Minotaur Alley"]: Folder;
+		["Dark Alley"]: Folder;
 	};
 	Camera: Camera;
 	Baseplate: Part & {
@@ -50,7 +50,7 @@ interface Workspace extends Model {
 		};
 	};
 	EnemySpawns: Folder & {
-		["Minotaur Alley"]: Folder & {
+		["Dark Alley"]: Folder & {
 			Spawner: Part & {
 				Enemies: Folder & {
 					Necromancer: Configuration;
@@ -65,13 +65,13 @@ interface Workspace extends Model {
 		};
 		Shop: Part;
 		Tunnels: Folder & {
-			MinotaurAlleyExit: Model & {
+			DarkAlleyExit: Model & {
 				CommonEntrance: Part & {
 					Exit: ObjectValue;
 				};
 				Gate: UnionOperation;
 			};
-			MinotaurAlleyEntrance: Model & {
+			DarkAlleyEntrance: Model & {
 				CommonEntrance: Part & {
 					Exit: ObjectValue;
 				};
@@ -762,7 +762,5 @@ interface Workspace extends Model {
 			};
 		};
 	};
-	AreaSpawns: Folder & {
-		["Central Park"]: SpawnLocation;
-	};
+	["Central Park"]: SpawnLocation;
 }

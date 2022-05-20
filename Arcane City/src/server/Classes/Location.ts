@@ -1,14 +1,11 @@
-import { Workspace } from "@rbxts/services";
-
-const areaSpawns = Workspace.AreaSpawns;
 namespace Location {
-    class LocationBase {
+    export class Area {
         public constructor(
             public readonly Name: string
         ) {}
     }
 
-    export class World extends LocationBase {
+    export class World extends Area {
         public constructor(
             name: string,
             public readonly CommonArea: Area,
@@ -21,15 +18,6 @@ namespace Location {
             for (const a of this.Areas)
                 if (a.Name === name)
                     return a;
-        }
-    }
-
-    export class Area extends LocationBase {
-        public constructor(
-            name: string,
-            public readonly SpawnPoint = <BasePart>areaSpawns.WaitForChild(name, 6)
-        ) {
-            super(name);
         }
     }
 }

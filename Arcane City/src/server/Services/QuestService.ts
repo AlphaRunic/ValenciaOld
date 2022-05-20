@@ -1,6 +1,6 @@
 import { KnitServer as Knit, RemoteSignal, Signal } from "@rbxts/knit";
-import { Workspace } from "@rbxts/services";
-import { $print, $warn } from "rbxts-transform-debug";
+import { Workspace as World } from "@rbxts/services";
+import { Exception } from "shared/Internal/Exception";
 import { Quest, XPGain } from "server/Classes/Quest";
 import Worlds from "server/Classes/Worlds";
 
@@ -10,7 +10,6 @@ declare global {
     }
 }
 
-const data = Knit.GetService("DataManager");
 const QuestService = Knit.CreateService({
     Name: "QuestService",
 
@@ -54,9 +53,9 @@ const QuestService = Knit.CreateService({
     },
 
     KnitStart(): void {
-        $print("QuestService active");
-        const goals = Workspace.QuestGoals;
-        const spawns = Workspace.EnemySpawns;
+        print("QuestService active");
+        const goals = World.QuestGoals;
+        const spawns = World.EnemySpawns;
         const ac = Worlds.Get("Arcane City");
 
         this.Quests = [
@@ -88,7 +87,7 @@ const QuestService = Knit.CreateService({
                 "Learning Experience",
                 Quest.Predicate.TalkTo,
                 "Librarian",
-                "Minotaur Alley",
+                "Dark Alley",
                 goals.NPCs.Librarian.PrimaryPart.Position,
                 [new XPGain(400)]
             ),
@@ -96,8 +95,8 @@ const QuestService = Knit.CreateService({
                 "Necromantic Wands",
                 Quest.Predicate.Defeat,
                 "Necromancer",
-                "Minotaur Alley",
-                spawns["Minotaur Alley"].Spawner.Position,
+                "Dark Alley",
+                spawns["Dark Alley"].Spawner.Position,
                 [new XPGain(600)]
             )
         ];
@@ -114,6 +113,7 @@ const QuestService = Knit.CreateService({
     },
 
     GetCurrentQuestNumber(plr: Player): number {
+        const data = Knit.GetService("DataManager");
         return data.Get<number>(plr, "questNumber");
     },
 
@@ -126,19 +126,17 @@ const QuestService = Knit.CreateService({
     CompleteCurrent(plr: Player): void {
         const current: Quest.Quest = this.GetCurrentQuest(plr);
         const idx: number = this.Quests.indexOf(current) + 1;
-        if (current.Completed === true) {
-            $warn(`Failed to complete quest at index ${idx} (quest already completed).`);
-            return;
-        }
+        if (current.Completed === true)
+            throw new Exception(`Failed to complete quest at index ${idx} (quest already completed).`);
+        
         this.Complete(plr, idx);
     },
 
     Complete(plr: Player, questIdx: number): void {
         const quest: Quest.Quest = this.GetQuestByNumber(questIdx);
-        if (!quest) {
-            $warn(`Failed to complete quest at index ${questIdx} (quest not found).`);
-            return;
-        }
+        if (!quest)
+            throw new Exception(`Failed to complete quest at index ${questIdx} (quest not found).`);
+        
         this.Client.Completed.Fire(plr, questIdx);
         quest.Complete(plr);
     },

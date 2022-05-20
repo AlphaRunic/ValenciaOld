@@ -3,7 +3,6 @@ import { RunService, StarterGui, Stats } from "@rbxts/services";
 import { Player } from "@rbxts/knit/Knit/KnitClient";
 import { Exception } from "shared/Internal/Exception";
 import { GameStats, UI } from "shared/structs";
-import { $print } from "rbxts-transform-debug";
 import Tweenable from "shared/Util/Tweenable";
 import FormatInt from "shared/Util/FormatInt";
 
@@ -19,7 +18,6 @@ const debugUI = main.Debug;
 const gold = gameUI.Gold;
 const crystals = gameUI.Crystals;
 const xp = gameUI.XP.Bar;
-const level = gameUI.Level;
 const questGuide = gameUI.QuestInstructions;
 
 const UIController = Knit.CreateController({
@@ -41,7 +39,7 @@ const UIController = Knit.CreateController({
     },
     
     KnitStart(): void {
-        $print("UIController active");
+        print("UIController active");
         StarterGui.SetCoreGuiEnabled(Enum.CoreGuiType.All, false);
 
         const gameService = Knit.GetService("GameService");
@@ -54,6 +52,7 @@ const UIController = Knit.CreateController({
         const playerStats = Knit.GetController("PlayerStatsController");
         const notification = Knit.GetController("NotificationController");
         const loadScreen = Knit.GetController("LoadScreenController");
+        const inventory = Knit.GetController("InventoryController");
 
         function EnableLoadScreen(inf = false): void {
             loadScreen.Toggle(true);
@@ -72,7 +71,7 @@ const UIController = Knit.CreateController({
         location.PlaceTeleported.Connect(() => EnableLoadScreen(true));
         location.Teleported.Connect(EnableLoadScreen);
         quests.GameCompleted.Connect(() => {
-            $print("game completed");
+            print("game completed");
             questArrow.StopPointing();
             questGuide.Text = "";
         });
@@ -100,9 +99,9 @@ const UIController = Knit.CreateController({
                 case "gameStats":
                     const stats = <GameStats>value;
                     playerStats.Update(stats.CharacterStats);
+                    inventory.Update(inventory.GetStorage());
                     
                     xpBar.Tween({ Size: new UDim2((stats.XP / levels.GetXPUntilNext()) * .93, 0, 1, 0) });
-                    level.Text = FormatInt(stats.Level);
                     break;
 
                 default:

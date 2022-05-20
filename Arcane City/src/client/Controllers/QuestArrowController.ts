@@ -2,7 +2,6 @@ import { KnitClient as Knit } from "@rbxts/knit";
 import { RunService as Runtime, Workspace } from "@rbxts/services";
 import { Player } from "@rbxts/knit/Knit/KnitClient";
 import { Assets } from "shared/structs";
-import { $print } from "rbxts-transform-debug";
 import RemoveY from "shared/Util/RemoveY";
 
 declare global {
@@ -62,7 +61,7 @@ const QuestArrowController = Knit.CreateController({
     },
 
     KnitInit(): void {
-        $print("QuestArrowController active");
+        print("QuestArrowController active");
     }
 });
 

@@ -1,5 +1,5 @@
 import { KnitServer as Knit } from "@rbxts/knit";
-import { Debris } from "@rbxts/services";
+import { Debris as Trash } from "@rbxts/services";
 import { Assets, GameStats } from "shared/structs";
 import Tweenable from "shared/Util/Tweenable";
 import Weld from "shared/Util/Weld";
@@ -10,12 +10,13 @@ declare global {
     }
 }
 
-const data = Knit.GetService("DataManager");
 function GetStatsFor(plr: Player): GameStats {
+    const data = Knit.GetService("DataManager");
     return data.Get<GameStats>(plr, "gameStats");
 }
 
 function SetStatsFor(plr: Player, newStats: GameStats): void {
+    const data = Knit.GetService("DataManager");
     data.Set<GameStats>(plr, "gameStats", newStats);
 }
 
@@ -81,18 +82,18 @@ const LevelsService = Knit.CreateService({
         const vfx = Assets.VFX.LevelUp.Clone();
         const root = char.PrimaryPart!;
         const weld = <Weld>Weld(root, vfx, false);
-        // weld.C1 = root.CFrame.sub(new Vector3(0, -2));
+        weld.C1 = root.CFrame.sub(new Vector3(0, 1));
         vfx.Spiral.Enabled = true;
         vfx.Beams.Enabled = true;
         vfx.Parent = char;
 
-        const vfxTwn = new Tweenable(weld, 1.8, Enum.EasingStyle.Back, 1);
+        const vfxTwn = new Tweenable(weld, 1.6, Enum.EasingStyle.Back, .3);
         vfxTwn.TweenOut({
-            C1: weld.C1.mul(new CFrame(0, -3, 0))
+            C1: weld.C1.mul(new CFrame(0, -2, 0))
         }).Completed.Connect(() => {
             vfx.Spiral.Enabled = false;
             vfx.Beams.Enabled = false;
-            Debris.AddItem(vfx, 4);
+            Trash.AddItem(vfx, 4);
         });
     },
 

@@ -1,7 +1,8 @@
-import { ReplicatedFirst } from "@rbxts/services";
+import { Players, ReplicatedFirst } from "@rbxts/services";
 import WaitFor from "./Util/WaitFor";
 
 export const Assets = ReplicatedFirst.Assets;
+export type ItemCategory = "Weapons" | "Hats" | "Robes" | "Boots" | "Charms";
 
 export class CharStats {
     public Damage = 0;
@@ -16,6 +17,7 @@ export class GameStats {
     public CharacterStats = new CharStats;
     public OwnedItems: ShopItem[] = [];
     public EquippedItems: ShopItem[] = [];
+    public LastLocation: Vector3;
 }
 
 const items = Assets.ShopItems;
@@ -25,7 +27,8 @@ export class ShopItem<R extends Model = Model> {
     public constructor(
         public readonly Name: string,
         public readonly Description: string,
-        public readonly Price: number
+        public readonly Price: number,
+        public readonly Category: ItemCategory
     ) {}
 
     public AssignViewport(viewport: ViewportFrame & { Title: TextLabel; }): void {
@@ -44,11 +47,11 @@ export class ShopItem<R extends Model = Model> {
 }
 
 export const ShopItems: ShopItem[] = [
-    new ShopItem("Iron Sword", "A sharp blade, perfect for combat.", 500)
+    new ShopItem("Iron Sword", "A sharp blade, perfect for combat.", 500, "Weapons")
 ];
 
 export class UI {
-    public static Main(plr: Player): PlayerGui["Main"] {
+    public static Main(plr: Player = Players.LocalPlayer): PlayerGui["Main"] {
         return plr.WaitForChild("PlayerGui").WaitForChild("Main", 10) as PlayerGui["Main"];
     }
 }

@@ -1,8 +1,6 @@
 import { KnitClient as Knit, Signal } from "@rbxts/knit";
-import { Player } from "@rbxts/knit/Knit/KnitClient";
 import { RunService } from "@rbxts/services";
 import { Assets, GameStats, ShopItem, ShopItems, UI } from "shared/structs";
-import { $print } from "rbxts-transform-debug";
 import Tweenable from "shared/Util/Tweenable";
 import FormatInt from "shared/Util/FormatInt";
 import Find from "shared/Util/Find";
@@ -15,7 +13,7 @@ declare global {
     }
 }
  
-const main = UI.Main(Player);
+const main = UI.Main();
 const shop = main.Interactions.Shop;
 const display = shop.ItemDisplay;
 const purchaseItem = display.Shadow.Purchase;
@@ -48,7 +46,7 @@ const ShopController = Knit.CreateController({
     },
         
     KnitStart(): void {
-        $print("ShopController active");
+        print("ShopController active");
         const data = Knit.GetService("DataManager");
         const charLock = Knit.GetService("CharacterLockService");
         const quests = Knit.GetService("QuestService");

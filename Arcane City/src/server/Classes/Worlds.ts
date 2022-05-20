@@ -3,7 +3,7 @@ import { Area, World } from "./Location";
 export default class Worlds {
     private static list = [
         new World("Arcane City", new Area("Central Park"), [
-            new Area("Minotaur Alley")
+            new Area("Dark Alley")
         ])
     ];
 

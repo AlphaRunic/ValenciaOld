@@ -1,6 +1,5 @@
 import { Component, KnitServer as Knit } from "@rbxts/knit";
 import { Workspace } from "@rbxts/services";
-import { $print } from "rbxts-transform-debug";
 import Enemy from "server/Classes/Enemy";
 import RandomElement from "shared/Util/RandomElement";
 
@@ -10,7 +9,7 @@ class EnemySpawner implements Component.ComponentClass {
     
     constructor(spawner: Instance & { Enemies: Folder }) {
         assert(spawner.IsA("BasePart"));
-        $print("EnemySpawnerComponent modifying: " + spawner.Name + " in " + spawner.Parent.Name);
+        print("EnemySpawnerComponent modifying: " + spawner.Name + " in " + spawner.Parent.Name);
 
         const enemy = Knit.GetService("EnemyService");
         let storageFull = false;

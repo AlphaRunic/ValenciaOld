@@ -1,6 +1,5 @@
-/* eslint-disable prefer-const */
 import { Component, KnitClient as Knit, Signal } from "@rbxts/knit";
-import { $print, $warn } from "rbxts-transform-debug";
+import { Exception } from "shared/Internal/Exception";
 import { Assets } from "shared/structs";
 
 export = class Interactable implements Component.ComponentClass {
@@ -8,7 +7,7 @@ export = class Interactable implements Component.ComponentClass {
 
     public constructor(hitbox: Instance) {
         assert(hitbox.IsA("BasePart"));
-        $print("InteractableComponent modifying: " + hitbox.Name);
+        print("InteractableComponent modifying: " + hitbox.Name);
 
         switch(hitbox.Name) {
             case "Shop": {
@@ -34,7 +33,7 @@ export = class Interactable implements Component.ComponentClass {
                 const currentQuest = quests.GetCurrentQuest();
                 switch(hitbox.Name) {
                     case "CommonEntrance": {
-                        const exit = <BasePart>(hitbox.WaitForChild("Exit") as ObjectValue).Value;
+                        const exit = <BasePart>(<ObjectValue><unknown>hitbox.WaitForChild("Exit")).Value;
                         location.Teleport(exit);
                         touchDB = false;
                         break;
@@ -51,15 +50,8 @@ export = class Interactable implements Component.ComponentClass {
                         });
                         break;
                     }
-                    case "Crystal": {
-                        if (currentQuest?.Name === "What's This?") {
-                            quests.CompleteCurrent();
-                            hitbox.Destroy();
-                            touchDB = false;
-                        }
-                        break;
-                    }
-                    default: $warn(`Unhandled interactable case on hitbox named: ${hitbox.Name}`);
+                    default:
+                        throw new Exception(`Unhandled interactable case on hitbox named: ${hitbox.Name}`);
                 }
             }
         });

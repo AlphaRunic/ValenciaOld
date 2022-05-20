@@ -1,4 +1,5 @@
 import { KnitClient as Knit } from "@rbxts/knit";
+import { Player } from "@rbxts/knit/Knit/KnitClient";
 
 declare global {
     interface KnitControllers {
@@ -11,8 +12,8 @@ const CombatModeController = Knit.CreateController({
 
     KnitStart(): void {
         const combat = Knit.GetService("CombatService");
-        combat.Began.Connect((plr: Player, enemy: Model, battleArea: Model) => {
-
+        combat.Began.Connect((enemy: Model) => {
+            print("Combat initiated. " + Player.Name + " vs " + enemy.Name);
         });
     }
 });
