@@ -99,7 +99,7 @@ const UIController = Knit.CreateController({
                 case "gameStats":
                     const stats = <GameStats>value;
                     playerStats.Update(stats.CharacterStats);
-                    inventory.Update(inventory.GetStorage());
+                    inventory.Update(stats.OwnedItems);
                     
                     xpBar.Tween({ Size: new UDim2((stats.XP / levels.GetXPUntilNext()) * .93, 0, 1, 0) });
                     break;

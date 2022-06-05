@@ -1,5 +1,4 @@
 import { KnitClient as Knit } from "@rbxts/knit";
-import { Player } from "@rbxts/knit/Knit/KnitClient";
 import { ProximityPromptService } from "@rbxts/services";
 import { UI } from "shared/structs";
 import GetDialoguePrompt from "client/Roact/DialoguePrompt";
@@ -26,7 +25,7 @@ function CreatePrompt(prompt: ProximityPrompt): Callback {
     }
 
     const promptTree = Roact.mount(GetDialoguePrompt(prompt), main.Interactions);
-    const changedConn = prompt.Changed.Connect(UpdateUIFromPrompt);
+    const changedConn = prompt.Triggered.Connect(UpdateUIFromPrompt);
     UpdateUIFromPrompt();
 
     return function(): void {
